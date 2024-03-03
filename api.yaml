@@ -1,0 +1,255 @@
+swagger: "2.0"
+info:
+  title: E-commerce API
+  description: This is the API documentation for the E-commerce API. The API provides endpoints for managing user-related operations, authentication, authorization, and job-related operations. Users can register, retrieve all users, update user information, delete users, login, get authenticated user details, create, update, delete, and retrieve all products.
+  version: 1.0
+  contact:
+    email: preetam.devji123@gmail.com
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0"
+servers:
+  - url: http://localhost:5000/
+    description: This is my local Server
+  - url: http://example.com/
+    description: This is my original URL
+schemes: [http]
+consumes:
+  - application/json
+produces:
+  - application/json
+tags:
+  - name: Authentication
+    description: User authentication endpoints
+  - name: Users
+    description: User-related operations
+  - name: Products
+    description: Product-related operations
+  - name: Cart
+    description: Cart-related operations
+  - name: Orders
+    description: Order-related operations
+  - name: Ratings
+    description: Product rating-related operations
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Authentication
+      summary: User Signup
+      description: Registers a new user
+      parameters:
+        - in: body
+          name: user
+          description: User object that needs to be registered
+          required: true
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        '200':
+          description: User registered successfully
+        '400':
+          description: Invalid request payload
+  /auth/signin:
+    post:
+      tags:
+        - Authentication
+      summary: User Signin
+      description: Authenticates a user
+      parameters:
+        - in: body
+          name: credentials
+          description: User credentials for login
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        '200':
+          description: User authenticated successfully
+        '401':
+          description: Unauthorized - Invalid credentials
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      description: Retrieves all users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        '401':
+          description: Unauthorized - User not authenticated
+  /api/admin/products:
+    Post:
+      tags:
+        - Products
+      summary: Get all products
+      description: Retrieves all products
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Product'
+        '401':
+          description: Unauthorized - User not authenticated
+    post:
+      summary: Create a new product
+      description: Create a new product with the provided details.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: body
+          name: product
+          description: The product object to be created
+          required: true
+          schema:
+            $ref: '#/definitions/ProductInput'
+      responses:
+        200:
+          description: Product created successfully
+          schema:
+            $ref: '#/definitions/Product'
+  /api/products/{productId}:
+    get:
+      summary: Get a product by ID
+      description: Returns the details of a specific product identified by its ID.
+      parameters:
+        - in: path
+          name: productId
+          description: ID of the product to retrieve
+          required: true
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/Product'
+        404:
+          description: Product not found
+    put:
+      summary: Update a product
+      description: Update the details of a specific product identified by its ID.
+      parameters:
+        - in: path
+          name: productId
+          description: ID of the product to update
+          required: true
+          type: string
+        - in: body
+          name: product
+          description: The updated product object
+          required: true
+          schema:
+            $ref: '#/definitions/ProductInput'
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Product updated successfully
+          schema:
+            $ref: '#/definitions/Product'
+        404:
+          description: Product not found
+    delete:
+      summary: Delete a product
+      description: Delete a specific product identified by its ID.
+      parameters:
+        - in: path
+          name: productId
+          description: ID of the product to delete
+          required: true
+          type: string
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Product deleted successfully
+definitions:
+  User:
+    type: object
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+  Product:
+    type: object
+    properties:
+      id:
+        type: string
+        description: The unique identifier for the product
+      title:
+        type: string
+        description: The title of the product
+      description:
+        type: string
+        description: The description of the product
+      price:
+        type: number
+        description: The price of the product
+      quantity:
+        type: integer
+        description: The quantity of the product available
+      brand:
+        type: string
+        description: The brand of the product
+      category:
+        type: string
+        description: The category of the product
+    required:
+      - title
+      - description
+      - price
+      - quantity
+  ProductInput:
+    type: object
+    properties:
+      title:
+        type: string
+        description: The title of the product
+      description:
+        type: string
+        description: The description of the product
+      price:
+        type: number
+        description: The price of the product
+      quantity:
+        type: integer
+        description: The quantity of the product available
+      brand:
+        type: string
+        description: The brand of the product
+      category:
+        type: string
+        description: The category of the product
